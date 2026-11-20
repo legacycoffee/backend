@@ -9,7 +9,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / '.env')
 
 DEBUG = os.environ.get('DJANGO_DEBUG', 'true').lower() == 'true'
-if os.environ.get('RAILWAY_ENVIRONMENT'):
+if os.environ.get('RENDER') or os.environ.get('RAILWAY_ENVIRONMENT'):
     DEBUG = False
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 if not SECRET_KEY:
@@ -21,7 +21,10 @@ ALLOWED_HOSTS = [
     for host in os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
     if host.strip()
 ]
-for host in ('legacy-production-48e0.up.railway.app', os.environ.get('RAILWAY_PUBLIC_DOMAIN', '')):
+for host in (
+    os.environ.get('RENDER_EXTERNAL_HOSTNAME', ''),
+    os.environ.get('RAILWAY_PUBLIC_DOMAIN', ''),
+):
     if host and host not in ALLOWED_HOSTS:
         ALLOWED_HOSTS.append(host)
 
@@ -86,6 +89,7 @@ if database_url := os.environ.get('DATABASE_URL'):
         database_url,
         conn_max_age=600,
         conn_health_checks=True,
+        ssl_require=True,
     )
 
 AUTH_USER_MODEL = 'accounts.User'
