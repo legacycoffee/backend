@@ -3,10 +3,16 @@ from pathlib import Path
 
 import dj_database_url
 from django.core.exceptions import ImproperlyConfigured
-from dotenv import load_dotenv
+from dotenv import dotenv_values, load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+PROJECT_ENV_FILE = BASE_DIR.parent / '.env.local'
+load_dotenv(PROJECT_ENV_FILE)
 load_dotenv(BASE_DIR / '.env')
+if not os.environ.get('DATABASE_URL'):
+    project_database_url = dotenv_values(PROJECT_ENV_FILE).get('DATABASE_URL')
+    if project_database_url:
+        os.environ['DATABASE_URL'] = project_database_url
 
 DEBUG = os.environ.get('DJANGO_DEBUG', 'true').lower() == 'true'
 if os.environ.get('RENDER') or os.environ.get('RAILWAY_ENVIRONMENT'):

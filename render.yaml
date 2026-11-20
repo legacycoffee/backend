@@ -3,12 +3,12 @@ services:
     name: legacy-coffee-backend
     runtime: python
     plan: free
-    region: frankfurt
+    region: virginia
     branch: main
     buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput
     startCommand: >-
       set -eu;
-      : "${DATABASE_URL_UNPOOLED:?Set DATABASE_URL_UNPOOLED to Neon's direct connection string}";
+      : "${DATABASE_URL_UNPOOLED:?Set DATABASE_URL_UNPOOLED to the direct connection string}";
       DATABASE_URL="$DATABASE_URL_UNPOOLED" python manage.py migrate --noinput &&
       DATABASE_URL="$DATABASE_URL_UNPOOLED" python manage.py create_initial_admin &&
       DATABASE_URL="$DATABASE_URL_UNPOOLED" python manage.py seed_products --skip-existing &&
